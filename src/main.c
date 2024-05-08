@@ -1,6 +1,9 @@
+#include "parser.h"
 #include <ncurses.h>
 
-int main(int args, char* argv[]) {
+int main(int argc, char *argv[]) {
+    argv_t new_argv = argv_parse(argc, argv);
+
     // Инициализация библиотеки ncurses
     initscr();
 
