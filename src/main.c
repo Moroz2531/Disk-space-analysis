@@ -1,23 +1,26 @@
 #include "parser.h"
-#include <ncurses.h>
+#include "help.h"
 
 int main(int argc, char *argv[]) {
     argv_t new_argv = argv_parse(argc, argv);
+    int ch;
+    // опция '-h'
+    if (new_argv.opt && strcmp(new_argv.opt, "-h") == 0) {
+        help_draw();
+        return 0;
+    } 
 
-    // Инициализация библиотеки ncurses
     initscr();
+    curs_set(0);
 
-    // Создание нового окна размера 20x40
+    // создание нового окна размера 20x40
     // с координатами левого верхнего угла (5, 10)
     WINDOW* win = newwin(20, 40, 5, 10);
     box(win, 0, 0);
     wrefresh(win);
+    
+    while ((ch = getch()) != 'q') {}
 
-    // Ожидание нажатия клавиши q для выхода
-    int ch;
-    while ((ch = getch()) != 'q')
-
-    // Очистка и завершение работы библиотеки ncurses
     delwin(win);
     endwin();
 
