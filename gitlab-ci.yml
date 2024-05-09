@@ -1,11 +1,9 @@
-default:
-  image: registry.csc.sibsutis.ru/trpo/ci
+stages:
+  - check-codestyle
+  - build
 
-.build-script:
-  script:
-    - echo "Compiling the code..."
-    - make
-    - echo "Compile complete."
+before_script:
+  - apt-get update && apt-get install -y libncurses5-dev libncursesw5-dev
 
 .check-codestyle:
   script:
@@ -13,9 +11,11 @@ default:
     - git ls-files *.{cpp,h} | xargs clang-format -i --verbose && git diff --exit-code
     - echo "Codestyle is fine."
 
-stages:
-  - check-codestyle
-  - build
+.build-script:
+  script:
+    - echo "Compiling the code..."
+    - make
+    - echo "Compile complete."
 
 checkstyle:
   stage: check-codestyle

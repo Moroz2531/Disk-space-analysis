@@ -4,7 +4,7 @@ CC = gcc
 CFLAGS = -Wall -Werror
 NCURSES_FLAGS = -lncurses
 
-SRC_DIR = src/main
+SRC_DIR = src
 OBJ_DIR = obj/src
 BIN_DIR = bin
 
