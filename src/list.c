@@ -3,20 +3,22 @@
 
 #include "list.h"
 
-Listnode* listnode_create(char name, int type)
+Listnode* listnode_create(char* name, int type)
 {
     Listnode* p = malloc(sizeof(Listnode));
+    char* name_cpy = malloc(strlen(name) + 1);
+    memcpy(name_cpy, name, strlen(name) + 1);
     if (p != NULL) {
-        strcpy(p->name, name);
+        p->name = name_cpy;
         p->type = type;
         p->next = NULL;
     }
     return p;
 };
 
-Listnode* listnode_add(Listnode* list, char name, int type)
+Listnode* listnode_add(Listnode* list, char* name, int type)
 {
-    Listnode* newnode = listnode_createnode(name, type);
+    Listnode* newnode = listnode_create(name, type);
     if (newnode != NULL) {
         newnode->next = list;
         return newnode;
@@ -35,25 +37,17 @@ Listdir* listdir_create(char* path)
     return p;
 };
 
-Listdir* listdir_add(Listdir* ldir, char* path)
+void listdir_add(Listdir* ldir, Listdir* newdir)
 {
-    Listdir* newdir = listdir_create(path);
     while (ldir->next != NULL)
         ldir = ldir->next;
     ldir->next = newdir;
-    return newdir;
 };
 
-void listdir_init(Listdir* ldir, char* path)
-{
-    ldir->next = NULL;
-    ldir->node = NULL;
-    ldir->path_dir = path;
-};
-
-void listdir_free(Listdir* ldir)
+/*void listdir_free(Listdir* ldir)
 {
     for (; ldir != NULL; ldir = ldir->next) {
-        for (; ldir)
+        for (; ldir->node != NULL; ldir->node = ldir->node->next) {
+        }
     }
-};
+};*/
