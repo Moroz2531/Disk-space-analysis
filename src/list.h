@@ -20,5 +20,6 @@ Listnode* listnode_create(char* name, int type);
 Listnode* listnode_add(Listnode* list, char* name, int type);
 Listdir* listdir_create(char* path);
 void listdir_add(Listdir* ldir, Listdir* newdir);
+void listdir_free(Listdir* ldir);
 
 #endif

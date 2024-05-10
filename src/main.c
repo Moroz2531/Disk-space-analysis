@@ -40,6 +40,6 @@ int main(int argc, char* argv[])
             printf("name: %s | type: %d\n", ldir->node->name, ldir->node->type);
         }
     }
-
+    listdir_free(ldir);
     return 0;
 }

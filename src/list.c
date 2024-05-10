@@ -6,6 +6,7 @@
 Listnode* listnode_create(char* name, int type)
 {
     Listnode* p = malloc(sizeof(Listnode));
+    /* превращение статической памяти в динамическую */
     char* name_cpy = malloc(strlen(name) + 1);
     memcpy(name_cpy, name, strlen(name) + 1);
     if (p != NULL) {
@@ -44,10 +45,22 @@ void listdir_add(Listdir* ldir, Listdir* newdir)
     ldir->next = newdir;
 };
 
-/*void listdir_free(Listdir* ldir)
+/* освобождение памяти для всей структуры listdir */
+void listdir_free(Listdir* ldir)
 {
-    for (; ldir != NULL; ldir = ldir->next) {
-        for (; ldir->node != NULL; ldir->node = ldir->node->next) {
+    for (Listdir* p = NULL; ldir != NULL; ldir = ldir->next) {
+        if (p != NULL) {
+            free(p->path_dir);
+            free(p);
         }
+        Listnode* n = NULL;
+        for (; ldir->node != NULL; ldir->node = ldir->node->next) {
+            if (n != NULL) {
+                free(n->name);
+                free(n);
+            }
+            n = ldir->node;
+        }
+        p = ldir;
     }
-};*/
+};
