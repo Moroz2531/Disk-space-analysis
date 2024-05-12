@@ -2,6 +2,9 @@
 #define PATH_H
 
 #include <dirent.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "list.h"
 

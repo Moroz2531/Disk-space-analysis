@@ -7,10 +7,10 @@
 #include <sys/stat.h>
 
 typedef struct {
-    char *opt;
-    char *dir;
+    char* opt;
+    char* dir;
 } argv_t;
 
-argv_t argv_parse(int argc, char *argv[]);
+argv_t argv_parse(int argc, char* argv[]);
 
 #endif
