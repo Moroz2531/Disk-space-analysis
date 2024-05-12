@@ -40,7 +40,7 @@ void test_output(WINDOW* win)
     if (fill_listdir(ldir)) {
         delwin(win);
         endwin();
-        fprintf(stderr, "Ошибка заполнения списка директории!\n");
+        fprintf(stderr, "Error filling listdir!\n");
         exit(1);
     }
 

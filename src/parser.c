@@ -8,7 +8,7 @@ argv_t argv_parse(int argc, char* argv[])
         return new_argv;
 
     if (argc > 3) {
-        fprintf(stderr, "Используйте: %s [option] [dir_path]\n", argv[0]);
+        fprintf(stderr, "Usage: %s [option] [dir_path]\n", argv[0]);
         exit(1);
     }
     // первый аргумент это опция
@@ -19,7 +19,7 @@ argv_t argv_parse(int argc, char* argv[])
 
             if (argc == 3) {
                 fprintf(stderr,
-                        "Опции '%s' не допускают указание пути\n",
+                        "Option '%s' does not allow specify path\n",
                         argv[1]);
                 exit(1);
             }
@@ -31,7 +31,7 @@ argv_t argv_parse(int argc, char* argv[])
                 new_argv.dir = argv[2];
             }
         } else {
-            fprintf(stderr, "Неизвестная опция: '%s'\n", argv[1]);
+            fprintf(stderr, "Unknown option: '%s'\n", argv[1]);
             exit(1);
         }
     } else {
@@ -43,7 +43,7 @@ argv_t argv_parse(int argc, char* argv[])
         struct stat st;
         if (stat(new_argv.dir, &st) != 0 || !S_ISDIR(st.st_mode)) {
             fprintf(stderr,
-                    "Директория %s не существует или недоступна\n",
+                    "Path %s is unknown or inaccessible\n",
                     new_argv.dir);
             exit(1);
         }

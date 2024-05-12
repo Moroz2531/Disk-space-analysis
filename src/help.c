@@ -6,23 +6,19 @@ void help_draw()
     curs_set(0);
     noecho();
 
-    box(stdscr, 0, 0);
+    box(stdscr, ACS_VLINE, ACS_HLINE);
 
-    mvprintw(2, 2, "Руководство по использованию приложения dse");
-    mvprintw(4, 4, "Возможные опции:");
-    mvprintw(5, 6, "-h\tОтображает руководство");
+    mvprintw(2, 2, "Guide to using the dse app");
+    mvprintw(4, 2, "Valid options:");
+    mvprintw(6, 4, "-h\t- displays manual");
+    mvprintw(7, 4, "-m\t- scan disk space usage from the starting directory");
     mvprintw(
-            6,
-            6,
-            "-m\tАнализ использования места на диске из начального каталога");
-    mvprintw(
-            7,
-            6,
-            "-a [dir_path]\tАнализ использования места на диске, включая "
-            "скрытые объекты");
-    mvprintw(9, 4, "Использование:");
-    mvprintw(10, 6, "./dse [option] [dir_path]");
-    mvprintw(12, 4, "Нажмите 'q' для выхода из справки");
+            8,
+            4,
+            "-a [dir_path]\t- scan disk space usage, including hidden objects");
+    mvprintw(10, 2, "Usage:");
+    mvprintw(12, 4, "./dse [option] [dir_path]");
+    mvprintw(14, 2, "Press 'q' to exit");
     refresh();
 
     char ch;
