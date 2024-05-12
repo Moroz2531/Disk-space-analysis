@@ -1,10 +1,6 @@
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
 #include "dir.h"
 
-/* находим путь запускаемого приложения */
+// определяет текущий рабочий каталог
 int absolute_root_path(char** path)
 {
     if (*path != NULL)
@@ -13,17 +9,27 @@ int absolute_root_path(char** path)
     return 0;
 };
 
-/* заполняем содержимое каталога в структуру */
 void fill_listnode(DIR* dir, Listdir* ldir)
 {
     struct dirent* entry;
+    struct stat file_stat;
 
-    /* проходим по каталогу и заполняем его содержимое в структуру */
-    while ((entry = readdir(dir)) != NULL)
-        ldir->node = listnode_add(ldir->node, entry->d_name, entry->d_type);
+    // проходим по каталогу и заполняем его содержимое в структуру
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_name[0] == '.')
+            continue;
+
+        // получаем информацию о файле или каталоге
+        char* full_path = change_path(ldir->path_dir, entry->d_name);
+        if (stat(full_path, &file_stat) == 0) {
+            ldir->node = listnode_add(ldir->node, entry->d_name, entry->d_type);
+            ldir->node->byte = file_stat.st_size; // сохраняем размер объекта
+        }
+        free(full_path);
+    }
 };
 
-/* получаем пути других каталогов */
+// получаем пути других каталогов
 char* change_path(char* path, char* name)
 {
     char* mod_path = malloc(strlen(path) + strlen(name) + 2);
@@ -35,7 +41,7 @@ char* change_path(char* path, char* name)
     return mod_path;
 };
 
-/* заполнение списка каталогов. ldir должен быть инициализирован */
+// заполнение списка каталогов. ldir должен быть инициализирован
 int fill_listdir(Listdir* ldir)
 {
     DIR* dir;
@@ -45,14 +51,14 @@ int fill_listdir(Listdir* ldir)
         return 1;
     ldir->path_dir = path;
 
-    /* заполняем в структуру содержимое корневого пути */
+    // заполняем в структуру содержимое корневого пути
     dir = opendir(path);
     if (!dir)
         return 1;
     fill_listnode(dir, ldir);
     closedir(dir);
 
-    /* увеличение связных списков и добавление каталогов с их содержимых */
+    // увеличение связных списков и добавление каталогов с их содержимых
     Listdir* t_ldir = ldir;
     for (Listdir* mod_ldir = NULL; t_ldir != NULL; t_ldir = t_ldir->next) {
         Listnode* n = t_ldir->node;
