@@ -3,7 +3,10 @@
 
 #include <pwd.h>
 #include <unistd.h>
+
 #include "parser.h"
+#include "dir.h"
+#include "converter.h"
 #include "help.h"
 
 void opt_m();
