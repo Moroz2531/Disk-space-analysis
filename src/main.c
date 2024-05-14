@@ -1,7 +1,8 @@
+#include "converter.h"
 #include "dir.h"
 #include "help.h"
 #include "parser.h"
-#include "converter.h"
+#include "opt.h"
 
 void test_output();
 
@@ -9,11 +10,8 @@ int main(int argc, char* argv[])
 {
     argv_t new_argv = argv_parse(argc, argv);
     int ch;
-    
-    if (new_argv.opt && strcmp(new_argv.opt, "-h") == 0) {
-        help_draw();
-        return 0;
-    }
+
+    selection_option(new_argv);
 
     initscr();
     curs_set(0);
@@ -31,7 +29,7 @@ int main(int argc, char* argv[])
     delwin(win);
     endwin();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void test_output(WINDOW* win)
@@ -42,7 +40,7 @@ void test_output(WINDOW* win)
         delwin(win);
         endwin();
         fprintf(stderr, "Error filling listdir!\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     converter(ldir);
