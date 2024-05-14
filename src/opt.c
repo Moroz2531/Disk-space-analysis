@@ -2,6 +2,8 @@
 
 void opt_m()
 {
+    Listdir* ldir = listdir_create(NULL);
+    DIR* dir;
     struct passwd pw, *pw_result;
     char buffer[4096];
     int status;
@@ -13,7 +15,59 @@ void opt_m()
         exit(EXIT_FAILURE);
     }
 
-    printf("Home directory: %s\n", pw.pw_dir);
+    ldir->path_dir = pw.pw_dir;
+
+    // заполняем в структуру содержимое корневого пути
+    dir = opendir(pw.pw_dir);
+    if (!dir) {
+        fprintf(stderr, "Failed to init home directory\n");
+        exit(EXIT_FAILURE);
+    }
+    fill_listnode(dir, ldir);
+    closedir(dir);
+
+    // увеличение связных списков и добавление каталогов с их содержимых
+    Listdir* t_ldir = ldir;
+    for (Listdir* mod_ldir = NULL; t_ldir != NULL; t_ldir = t_ldir->next) {
+        Listnode* n = t_ldir->node;
+        for (char* mod_path = NULL; n != NULL; n = n->next) {
+            if (n->type == DT_DIR) {
+                if (strcmp(n->name, ".") == 0 || strcmp(n->name, "..") == 0)
+                    continue;
+
+                mod_path = change_path(t_ldir->path_dir, n->name);
+                if (mod_path == NULL) {
+                    fprintf(stderr, "Fatal change path error!\n");
+                    exit(EXIT_FAILURE);
+                }
+                mod_ldir = listdir_create(mod_path);
+                listdir_add(t_ldir, mod_ldir);
+
+                dir = opendir(mod_ldir->path_dir);
+                fill_listnode(dir, mod_ldir);
+                closedir(dir);
+            }
+        }
+    }
+
+    if (count_bytes_dir(ldir)) {
+        fprintf(stderr, "Size analitic failed!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    converter(ldir);
+
+    for (; ldir != NULL; ldir = ldir->next) {
+        printf("path_dir: %s\n", ldir->path_dir);
+        for (; ldir->node != NULL; ldir->node = ldir->node->next) {
+            printf("name: %s | size: %zu | %c | type: %d\n",
+                   ldir->node->name,
+                   ldir->node->byte,
+                   ldir->size_type,
+                   ldir->node->type);
+        }
+    }
+    listdir_free(ldir);    
 }
 
 void selection_option(argv_t new_argv)
