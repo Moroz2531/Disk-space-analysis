@@ -9,6 +9,7 @@ Listnode* listnode_create(char* name, int type)
     if (p != NULL) {
         p->name = name_cpy;
         p->type = type;
+        p->size_type = 'b';
         p->next = NULL;
     }
 
@@ -33,6 +34,7 @@ Listdir* listdir_create(char* path)
 
     if (p != NULL) {
         p->path_dir = path;
+        p->size_type = 'b';
         p->next = NULL;
         p->node = NULL;
         p->prev = NULL;
