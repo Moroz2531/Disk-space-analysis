@@ -1,19 +1,26 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+
 typedef struct Listnode Listnode;
 typedef struct Listdir Listdir;
 
 typedef struct Listnode {
     char* name;
     int type;
+    size_t byte;
     Listnode* next;
 } Listnode;
 
 typedef struct Listdir {
     char* path_dir;
-    Listdir* next;
+    size_t byte_dir;
     Listnode* node;
+    Listdir* next;
+    Listdir* prev;
 } Listdir;
 
 Listnode* listnode_create(char* name, int type);

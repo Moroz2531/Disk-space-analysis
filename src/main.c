@@ -2,6 +2,8 @@
 #include "help.h"
 #include "parser.h"
 
+void test_output();
+
 int main(int argc, char* argv[])
 {
     argv_t new_argv = argv_parse(argc, argv);
@@ -14,12 +16,13 @@ int main(int argc, char* argv[])
 
     initscr();
     curs_set(0);
+    noecho();
 
-    // создание нового окна размера 20x40
-    // с координатами левого верхнего угла (5, 10)
     WINDOW* win = newwin(20, 40, 5, 10);
     box(win, 0, 0);
     wrefresh(win);
+
+    test_output(win);
 
     while ((ch = getch()) != 'q') {
     }
@@ -27,19 +30,29 @@ int main(int argc, char* argv[])
     delwin(win);
     endwin();
 
-    /* тестовый вывод приложения для наглядности проделанной работы */
-    /* разрешено удаление данной части для дальнейшего решения */
+    return 0;
+}
+
+void test_output(WINDOW* win)
+{
     Listdir* ldir = listdir_create(NULL);
+
     if (fill_listdir(ldir)) {
-        printf("Error fill listdir!\n");
-        return 1;
+        delwin(win);
+        endwin();
+        fprintf(stderr, "Error filling listdir!\n");
+        exit(1);
     }
+
     for (; ldir != NULL; ldir = ldir->next) {
-        printf("path_dir: %s\n", ldir->path_dir);
+        printw("path_dir: %s\n", ldir->path_dir);
         for (; ldir->node != NULL; ldir->node = ldir->node->next) {
-            printf("name: %s | type: %d\n", ldir->node->name, ldir->node->type);
+            printw("name: %s | size: %zu | type: %d\n",
+                   ldir->node->name,
+                   ldir->node->byte,
+                   ldir->node->type);
+            wrefresh(win);
         }
     }
     listdir_free(ldir);
-    return 0;
 }
