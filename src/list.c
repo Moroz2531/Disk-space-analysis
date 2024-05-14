@@ -35,6 +35,7 @@ Listdir* listdir_create(char* path)
         p->path_dir = path;
         p->next = NULL;
         p->node = NULL;
+        p->prev = NULL;
     }
 
     return p;
@@ -45,6 +46,7 @@ void listdir_add(Listdir* ldir, Listdir* newdir)
     while (ldir->next != NULL)
         ldir = ldir->next;
     ldir->next = newdir;
+    newdir->prev = ldir;
 };
 
 /* освобождение памяти для всей структуры listdir */
@@ -55,7 +57,7 @@ void listdir_free(Listdir* ldir)
             free(p->path_dir);
             free(p);
         }
-        
+
         Listnode* n = NULL;
         for (; ldir->node != NULL; ldir->node = ldir->node->next) {
             if (n != NULL) {

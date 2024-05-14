@@ -9,8 +9,9 @@
 #include "list.h"
 
 int absolute_root_path(char** path);
+int count_bytes_dir(Listdir* ldir);
+int fill_listdir(Listdir* ldir);
 void fill_listnode(DIR* dir, Listdir* ldir);
 char* change_path(char* path, char* name);
-int fill_listdir(Listdir* ldir);
 
 #endif

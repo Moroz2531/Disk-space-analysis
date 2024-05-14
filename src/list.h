@@ -17,8 +17,10 @@ typedef struct Listnode {
 
 typedef struct Listdir {
     char* path_dir;
-    Listdir* next;
+    size_t byte_dir;
     Listnode* node;
+    Listdir* next;
+    Listdir* prev;
 } Listdir;
 
 Listnode* listnode_create(char* name, int type);
