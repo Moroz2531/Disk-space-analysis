@@ -1,5 +1,21 @@
 #include "opt.h"
 
+void opt_m()
+{
+    struct passwd pw, *pw_result;
+    char buffer[4096];
+    int status;
+
+    // получаем начальный каталог пользователя
+    status = getpwuid_r(getuid(), &pw, buffer, sizeof(buffer), &pw_result);
+    if (status != 0 || pw_result == NULL) {
+        fprintf(stderr, "Failed to get home directory\n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Home directory: %s\n", pw.pw_dir);
+}
+
 void selection_option(argv_t new_argv)
 {
     if (new_argv.opt != NULL) {
@@ -9,7 +25,7 @@ void selection_option(argv_t new_argv)
             exit(EXIT_SUCCESS);
             // опция '-m'
         } else if (strcmp(new_argv.opt, "-m") == 0) {
-            fprintf(stderr, "Will be available very soon!\n");
+            opt_m();
             exit(EXIT_SUCCESS);
             // опция '-a'
         } else if (strcmp(new_argv.opt, "-a") == 0) {
