@@ -8,15 +8,18 @@
 
 #define SIZE_BUF 13
 
+// отображение абсолютного корневого пути
 void display_root_path(Listdir* ldir)
 {
     int length_path = strlen(ldir->path_dir);
     wchar_t buf[length_path + 1];
+
     swprintf(buf, length_path + 1, L"%s", ldir->path_dir);
     mvaddstr(0, 0, "path: ");
     mvaddwstr(0, strlen("path: "), buf);
 };
 
+// отображение имен файлов
 void display_listnode(Listdir* ldir)
 {
     Listnode* node = ldir->node;
@@ -27,6 +30,7 @@ void display_listnode(Listdir* ldir)
     }
 };
 
+// графика приложения: отображение разделителей и цветов
 void display_delim()
 {
     int cols, rows;
@@ -34,8 +38,14 @@ void display_delim()
 
     for (int i = 0; i < cols; i++)
         mvaddch(1, i, '-');
+};
+
+// отображение процентного соотношения
+void display_percentage(Listdir* ldir)
+{
 }
 
+// отображение структуры listdir
 int display_listdir(Listdir* ldir)
 {
     wchar_t c;
@@ -44,7 +54,6 @@ int display_listdir(Listdir* ldir)
     noecho();
     curs_set(0);
 
-    // устанавливаем UTF-8
     setlocale(LC_ALL, "ru_RU.UTF-8");
 
     do {
@@ -54,7 +63,7 @@ int display_listdir(Listdir* ldir)
         display_listnode(ldir);
         display_delim();
 
-        // перемещаем курсор в начало
+        // перемещение курсора в начало
         move(2, 0);
         refresh();
     } while ((c = getch()) != 'q');
