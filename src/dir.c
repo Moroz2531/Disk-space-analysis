@@ -114,7 +114,68 @@ int fill_listdir(Listdir* ldir)
             }
         }
     }
+
     if (count_bytes_dir(ldir))
         return 1;
     return 0;
 };
+// читаем и записываем все скрытые объекты
+void all_fill_listnode(DIR* dir, Listdir* ldir)
+{
+    struct dirent* entry;
+    struct stat file_stat;
+
+    // проходим по каталогу и заполняем его содержимое в структуру
+    while ((entry = readdir(dir)) != NULL) {
+        // получаем информацию о любом файле или каталоге
+        char* full_path = change_path(ldir->path_dir, entry->d_name);
+        if (stat(full_path, &file_stat) == 0) {
+            ldir->node = listnode_add(ldir->node, entry->d_name, entry->d_type);
+            ldir->node->byte = file_stat.st_size; // сохраняем размер объекта
+        }
+        free(full_path);
+    }
+}
+// читаем и записываем все скрытые объекты
+int all_fill_listdir(Listdir* ldir)
+{
+    DIR* dir;
+    char* path = NULL;
+
+    if (absolute_root_path(&path))
+        return 1;
+    ldir->path_dir = path;
+
+    // заполняем в структуру содержимое корневого пути
+    dir = opendir(path);
+    if (!dir)
+        return 1;
+    all_fill_listnode(dir, ldir);
+    closedir(dir);
+
+    // увеличение связных списков и добавление каталогов с их содержимых
+    Listdir* t_ldir = ldir;
+    for (Listdir* mod_ldir = NULL; t_ldir != NULL; t_ldir = t_ldir->next) {
+        Listnode* n = t_ldir->node;
+        for (char* mod_path = NULL; n != NULL; n = n->next) {
+            if (n->type == DT_DIR) {
+                if (strcmp(n->name, ".") == 0 || strcmp(n->name, "..") == 0)
+                    continue;
+
+                mod_path = change_path(t_ldir->path_dir, n->name);
+                if (mod_path == NULL)
+                    return 1;
+                mod_ldir = listdir_create(mod_path);
+                listdir_add(t_ldir, mod_ldir);
+
+                dir = opendir(mod_ldir->path_dir);
+                all_fill_listnode(dir, mod_ldir);
+                closedir(dir);
+            }
+        }
+    }
+
+    if (count_bytes_dir(ldir))
+        return 1;
+    return 0;
+}
