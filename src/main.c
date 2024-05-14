@@ -1,6 +1,7 @@
 #include "dir.h"
 #include "help.h"
 #include "parser.h"
+#include "converter.h"
 
 void test_output();
 
@@ -49,7 +50,7 @@ void test_output(WINDOW* win)
         for (; ldir->node != NULL; ldir->node = ldir->node->next) {
             printw("name: %s | size: %zu | type: %d\n",
                    ldir->node->name,
-                   ldir->node->byte,
+                   converter(ldir->node->byte),
                    ldir->node->type);
             wrefresh(win);
         }
