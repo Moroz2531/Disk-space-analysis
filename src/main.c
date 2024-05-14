@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 {
     argv_t new_argv = argv_parse(argc, argv);
     int ch;
-    // опция '-h'
+    
     if (new_argv.opt && strcmp(new_argv.opt, "-h") == 0) {
         help_draw();
         return 0;
@@ -45,12 +45,15 @@ void test_output(WINDOW* win)
         exit(1);
     }
 
+    converter(ldir);
+
     for (; ldir != NULL; ldir = ldir->next) {
         printw("path_dir: %s\n", ldir->path_dir);
         for (; ldir->node != NULL; ldir->node = ldir->node->next) {
-            printw("name: %s | size: %zu | type: %d\n",
+            printw("name: %s | size: %zu | %c | type: %d\n",
                    ldir->node->name,
-                   converter(ldir->node->byte),
+                   ldir->node->byte,
+                   ldir->size_type,
                    ldir->node->type);
             wrefresh(win);
         }
