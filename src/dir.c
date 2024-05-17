@@ -135,7 +135,7 @@ void all_fill_listnode(DIR* dir, Listdir* ldir)
         }
         free(full_path);
     }
-}
+};
 // читаем и записываем все скрытые объекты
 int all_fill_listdir(Listdir* ldir)
 {
@@ -178,4 +178,4 @@ int all_fill_listdir(Listdir* ldir)
     if (count_bytes_dir(ldir))
         return 1;
     return 0;
-}
+};

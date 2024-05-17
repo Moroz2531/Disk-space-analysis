@@ -54,13 +54,15 @@ void listdir_add(Listdir* ldir, Listdir* newdir)
 /* освобождение памяти для всей структуры listdir */
 void listdir_free(Listdir* ldir)
 {
-    for (Listdir* p = NULL; ldir != NULL; ldir = ldir->next) {
+    Listdir* p = NULL;
+    Listnode* n = NULL;
+
+    for (; ldir != NULL; ldir = ldir->next) {
         if (p != NULL) {
             free(p->path_dir);
             free(p);
         }
 
-        Listnode* n = NULL;
         for (; ldir->node != NULL; ldir->node = ldir->node->next) {
             if (n != NULL) {
                 free(n->name);
@@ -70,4 +72,6 @@ void listdir_free(Listdir* ldir)
         }
         p = ldir;
     }
+    free(p);
+    free(n);
 };

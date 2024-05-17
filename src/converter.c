@@ -16,7 +16,7 @@ size_t byte_converter(size_t byte)
         return byte / GB;
 
     return -1;
-}
+};
 
 char type_converter(size_t byte)
 {
@@ -34,7 +34,7 @@ char type_converter(size_t byte)
         return 'G';
 
     return 'b';
-}
+};
 
 void converter(Listdir* ldir)
 {
@@ -69,4 +69,4 @@ void converter(Listdir* ldir)
         ldir->size_type = type_converter(ldir->byte_dir);
         ldir = ldir->prev;
     }
-}
+};

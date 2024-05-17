@@ -5,60 +5,22 @@
 #include "output.h"
 #include "parser.h"
 
-void test_output();
-
 int main(int argc, char* argv[])
 {
-    int ch;
     argv_t new_argv = argv_parse(argc, argv);
     // опция '-h'
     if (new_argv.opt && strcmp(new_argv.opt, "-h") == 0) {
         help_draw();
-        return 0;
+        return EXIT_SUCCESS;
     }
 
-    initscr();
-    curs_set(0);
-    noecho();
-
-    WINDOW* win = newwin(20, 40, 5, 10);
-    box(win, 0, 0);
-    wrefresh(win);
-
-    test_output(win);
-
-    while ((ch = getch()) != 'q') {
+    Listdir* ldir = listdir_create(NULL);
+    if (fill_listdir(ldir)) {
+        listdir_free(ldir);
+        return EXIT_FAILURE;
     }
-
-    delwin(win);
-    endwin();
+    display_listdir(ldir);
+    listdir_free(ldir);
 
     return EXIT_SUCCESS;
-}
-
-void test_output(WINDOW* win)
-{
-    Listdir* ldir = listdir_create(NULL);
-
-    if (fill_listdir(ldir)) {
-        delwin(win);
-        endwin();
-        fprintf(stderr, "Error filling listdir!\n");
-        exit(EXIT_FAILURE);
-    }
-
-    converter(ldir);
-
-    for (; ldir != NULL; ldir = ldir->next) {
-        printw("path_dir: %s\n", ldir->path_dir);
-        for (; ldir->node != NULL; ldir->node = ldir->node->next) {
-            printw("name: %s | size: %zu | %c | type: %d\n",
-                   ldir->node->name,
-                   ldir->node->byte,
-                   ldir->size_type,
-                   ldir->node->type);
-            wrefresh(win);
-        }
-    }
-    listdir_free(ldir);
 }
