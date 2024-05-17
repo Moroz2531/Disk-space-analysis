@@ -1,4 +1,4 @@
-#include "opt.h"
+/*#include "opt.h"
 
 void opt_only_dir(char* path)
 {
@@ -234,3 +234,4 @@ void selection_option(argv_t new_argv)
         return;
     }
 };
+*/
