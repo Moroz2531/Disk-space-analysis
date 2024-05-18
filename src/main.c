@@ -1,5 +1,6 @@
 #include "converter.h"
 #include "dir.h"
+#include "global.h"
 #include "help.h"
 #include "opt.h"
 #include "output.h"
@@ -15,12 +16,12 @@ int main(int argc, char* argv[])
     }*/
 
     Listdir* ldir = listdir_create(NULL);
-    if (fill_listdir(ldir, 0)) {
+    if (fill_listdir(ldir, 1)) {
         listdir_free(ldir);
         return EXIT_FAILURE;
     }
     converter(ldir);
-    display_listdir(ldir);
+    // display_listdir(ldir);
     listdir_free(ldir);
 
     return EXIT_SUCCESS;

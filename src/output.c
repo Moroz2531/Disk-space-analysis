@@ -1,10 +1,3 @@
-#include <dirent.h>
-#include <locale.h>
-#include <ncursesw/ncurses.h>
-#include <stdio.h>
-#include <string.h>
-#include <wchar.h>
-
 #include "output.h"
 
 #define SIZE_BUF 17
@@ -34,7 +27,7 @@ int display_percentage(Listnode* n, const int y, const int x, size_t size_dir)
 void display_size(Listnode* n, const int y, const int x)
 {
     const int shift = x + 4;
-    mvprintw(y, shift, "%ld b\t", n->byte);
+    mvprintw(y, shift, "%ld %c\t", n->byte, n->size_type);
 }
 
 // отображение содержимого каталога

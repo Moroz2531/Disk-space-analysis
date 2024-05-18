@@ -1,11 +1,7 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include <dirent.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
+#include "global.h"
 #include "list.h"
 
 int absolute_root_path(char** path);

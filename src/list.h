@@ -1,9 +1,7 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
+#include "global.h"
 
 typedef struct Listnode Listnode;
 typedef struct Listdir Listdir;

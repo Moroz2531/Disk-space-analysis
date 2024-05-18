@@ -1,7 +1,7 @@
 #ifndef HELP_H
 #define HELP_H
 
-#include <ncurses.h>
+#include "global.h"
 
 void help_draw();
 

@@ -1,11 +1,9 @@
 #ifndef OPT_H
 #define OPT_H
 
-#include <pwd.h>
-#include <unistd.h>
-
 #include "converter.h"
 #include "dir.h"
+#include "global.h"
 #include "help.h"
 #include "parser.h"
 
