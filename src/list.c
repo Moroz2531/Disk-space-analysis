@@ -11,6 +11,7 @@ Listnode* listnode_create(char* name, int type)
         p->type = type;
         p->size_type = 'b';
         p->next = NULL;
+        p->prev = NULL;
     }
 
     return p;
@@ -19,13 +20,14 @@ Listnode* listnode_create(char* name, int type)
 Listnode* listnode_add(Listnode* list, char* name, int type)
 {
     Listnode* newnode = listnode_create(name, type);
+    if (newnode == NULL)
+        return list;
+    newnode->next = list;
 
-    if (newnode != NULL) {
-        newnode->next = list;
-        return newnode;
+    if (list != NULL) {
+        list->prev = newnode;
     }
-
-    return list;
+    return newnode;
 };
 
 Listdir* listdir_create(char* path)

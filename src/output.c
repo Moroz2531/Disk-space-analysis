@@ -7,7 +7,7 @@
 
 #include "output.h"
 
-#define SIZE_BUF 13
+#define SIZE_BUF 17
 
 // отображение абсолютного корневого пути
 void display_root_path(Listdir* ldir)
@@ -43,7 +43,7 @@ void display_listnode(Listdir* ldir)
     Listnode* node = ldir->node;
     for (int i = 2; node != NULL; node = node->next, i++) {
         wchar_t buf[SIZE_BUF];
-        swprintf(buf, SIZE_BUF, L"%12s", node->name);
+        swprintf(buf, SIZE_BUF, L"%16s", node->name);
         mvaddwstr(i, 0, buf);
         const int x = display_percentage(node, i, SIZE_BUF, ldir->byte_dir);
         display_size(node, i, x);

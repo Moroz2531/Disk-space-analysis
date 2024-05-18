@@ -14,6 +14,7 @@ typedef struct Listnode {
     char size_type;
     size_t byte;
     Listnode* next;
+    Listnode* prev;
 } Listnode;
 
 typedef struct Listdir {
