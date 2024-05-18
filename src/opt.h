@@ -1,8 +1,7 @@
 #ifndef OPT_H
 #define OPT_H
 
-#include <pwd.h>
-#include <unistd.h>
+#include "global.h"
 
 #include "converter.h"
 #include "dir.h"

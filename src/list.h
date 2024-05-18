@@ -1,9 +1,7 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
+#include "global.h"
 
 typedef struct Listnode Listnode;
 typedef struct Listdir Listdir;
@@ -14,6 +12,7 @@ typedef struct Listnode {
     char size_type;
     size_t byte;
     Listnode* next;
+    Listnode* prev;
 } Listnode;
 
 typedef struct Listdir {

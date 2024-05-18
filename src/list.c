@@ -11,6 +11,7 @@ Listnode* listnode_create(char* name, int type)
         p->type = type;
         p->size_type = 'b';
         p->next = NULL;
+        p->prev = NULL;
     }
 
     return p;
@@ -19,13 +20,14 @@ Listnode* listnode_create(char* name, int type)
 Listnode* listnode_add(Listnode* list, char* name, int type)
 {
     Listnode* newnode = listnode_create(name, type);
+    if (newnode == NULL)
+        return list;
+    newnode->next = list;
 
-    if (newnode != NULL) {
-        newnode->next = list;
-        return newnode;
+    if (list != NULL) {
+        list->prev = newnode;
     }
-
-    return list;
+    return newnode;
 };
 
 Listdir* listdir_create(char* path)
@@ -54,13 +56,15 @@ void listdir_add(Listdir* ldir, Listdir* newdir)
 /* освобождение памяти для всей структуры listdir */
 void listdir_free(Listdir* ldir)
 {
-    for (Listdir* p = NULL; ldir != NULL; ldir = ldir->next) {
+    Listdir* p = NULL;
+    Listnode* n = NULL;
+
+    for (; ldir != NULL; ldir = ldir->next) {
         if (p != NULL) {
             free(p->path_dir);
             free(p);
         }
 
-        Listnode* n = NULL;
         for (; ldir->node != NULL; ldir->node = ldir->node->next) {
             if (n != NULL) {
                 free(n->name);
@@ -70,4 +74,6 @@ void listdir_free(Listdir* ldir)
         }
         p = ldir;
     }
+    free(p);
+    free(n);
 };

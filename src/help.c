@@ -5,7 +5,7 @@ void help_draw()
     initscr();
     curs_set(0);
     noecho();
-    // создаём рамку граф.окна для вывода текста    
+    // создаём рамку граф.окна для вывода текста
     box(stdscr, ACS_VLINE, ACS_HLINE);
 
     mvprintw(2, 2, "Guide to using the dse app");
@@ -26,4 +26,4 @@ void help_draw()
     }
 
     endwin();
-}
+};

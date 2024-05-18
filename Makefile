@@ -1,8 +1,8 @@
 TARGET = dse
 
 CC = gcc
-CFLAGS = -Wall -Werror
-NCURSES_FLAGS = -lncurses
+CFLAGS = -Wall
+NCURSES_FLAGS = -lncursesw
 
 SRC_DIR = src
 OBJ_DIR = obj/src
@@ -18,7 +18,7 @@ $(BIN_DIR)/$(TARGET): $(OBJ)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@ 
 
 clean:
 	rm $(OBJ_DIR)/*.o $(BIN_DIR)/$(TARGET)

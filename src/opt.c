@@ -1,4 +1,4 @@
-#include "opt.h"
+/*#include "opt.h"
 
 void opt_only_dir(char* path)
 {
@@ -52,7 +52,7 @@ void opt_only_dir(char* path)
         }
     }
     listdir_free(ldir);
-}
+};
 
 void opt_m()
 {
@@ -122,7 +122,7 @@ void opt_m()
         }
     }
     listdir_free(ldir);
-}
+};
 
 void opt_a(char* path)
 {
@@ -138,7 +138,7 @@ void opt_a(char* path)
     }
     all_fill_listnode(dir, ldir);
     closedir(dir);
-    
+
     // увеличение связных списков и добавление каталогов с их содержимых
     Listdir* t_ldir = ldir;
     for (Listdir* mod_ldir = NULL; t_ldir != NULL; t_ldir = t_ldir->next) {
@@ -176,7 +176,7 @@ void opt_a(char* path)
         }
     }
     listdir_free(ldir);
-}
+};
 
 void opt_a_no_dir()
 {
@@ -200,7 +200,7 @@ void opt_a_no_dir()
         }
     }
     listdir_free(ldir);
-}
+};
 
 void selection_option(argv_t new_argv)
 {
@@ -233,4 +233,5 @@ void selection_option(argv_t new_argv)
     } else {
         return;
     }
-}
+};
+*/
