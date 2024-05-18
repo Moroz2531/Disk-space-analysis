@@ -14,11 +14,12 @@ void display_root_path(Listdir* ldir)
 };
 
 // отображение процентного соотношения
-int display_percentage(Listnode* n, const int y, const int x, size_t size_dir)
+int display_percentage(Listnode* n, int y, int x, Listdir* ldir)
 {
     // сдвиг по x
     const int shift = x + 3;
-    const float percentage = ((float)n->byte / size_dir) * 100;
+    const float percentage = ((float)n->byte / ldir->byte_dir) * 100;
+
     mvprintw(y, shift, "%5.2f%c\t", percentage, '%');
     // обходим отображение процентного соотношения
     return shift + 6;
@@ -27,7 +28,9 @@ int display_percentage(Listnode* n, const int y, const int x, size_t size_dir)
 void display_size(Listnode* n, const int y, const int x)
 {
     const int shift = x + 4;
-    mvprintw(y, shift, "%ld %c\t", n->byte, n->size_type);
+    size_t byte = converter(n);
+
+    mvprintw(y, shift, "%ld %c\t", byte, n->size_type);
 }
 
 // отображение содержимого каталога
@@ -36,9 +39,12 @@ void display_listnode(Listdir* ldir)
     Listnode* node = ldir->node;
     for (int i = 2; node != NULL; node = node->next, i++) {
         wchar_t buf[SIZE_BUF];
+
         swprintf(buf, SIZE_BUF, L"%16s", node->name);
         mvaddwstr(i, 0, buf);
-        const int x = display_percentage(node, i, SIZE_BUF, ldir->byte_dir);
+
+        const int x = display_percentage(node, i, SIZE_BUF, ldir);
+
         display_size(node, i, x);
         if (node->type == DT_DIR)
             printw("#");

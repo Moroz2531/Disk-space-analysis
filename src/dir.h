@@ -2,6 +2,7 @@
 #define PATH_H
 
 #include "global.h"
+
 #include "list.h"
 
 int absolute_root_path(char** path);
