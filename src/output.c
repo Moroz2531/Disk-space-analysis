@@ -37,6 +37,10 @@ void display_size(Listnode* n, const int y, const int x)
 void display_listnode(Listdir* ldir)
 {
     Listnode* node = ldir->node;
+
+    while (node->prev != NULL)
+        node = node->prev;
+
     for (int i = 2; node != NULL; node = node->next, i++) {
         wchar_t buf[SIZE_BUF];
 
@@ -61,14 +65,35 @@ void display_delim(Listdir* ldir)
         mvaddch(1, i, '-');
 };
 
+// управление клавишами up, down, left, right
+void movement(Listdir* ldir, wchar_t c)
+{
+    static int x = 0, y = 2;
+
+    move(y, x);
+    refresh();
+
+    if (c == KEY_UP && ldir->node->prev != NULL) {
+        y--;
+        ldir->node = ldir->node->prev;
+    } else if (c == KEY_DOWN && ldir->node->next != NULL) {
+        y++;
+        ldir->node = ldir->node->next;
+    } else if (c == KEY_RIGHT) {
+    }
+    mvprintw(10, 50, "%s", ldir->node->name);
+    move(y, x);
+};
+
 // отображение структуры listdir
 int display_listdir(Listdir* ldir)
 {
-    wchar_t c;
+    wchar_t c = 0;
 
     initscr();
     noecho();
-    curs_set(0);
+    keypad(stdscr, TRUE);
+    curs_set(1);
 
     setlocale(LC_ALL, "ru_RU.UTF-8");
 
@@ -78,10 +103,9 @@ int display_listdir(Listdir* ldir)
         display_root_path(ldir);
         display_listnode(ldir);
         display_delim(ldir);
-
-        // перемещение курсора в начало
-        move(2, 0);
+        movement(ldir, c);
         refresh();
+
     } while ((c = getch()) != 'q');
 
     endwin();

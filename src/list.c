@@ -74,6 +74,8 @@ void listdir_free(Listdir* ldir)
         }
         p = ldir;
     }
+    free(p->path_dir);
     free(p);
+    free(n->name);
     free(n);
 };
