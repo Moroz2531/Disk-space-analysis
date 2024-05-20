@@ -1,8 +1,9 @@
 *.[oa]
 *~
 *swp
-.bin/
+bin/
 /TODO
 *.txt
+
 
 .vscode/
