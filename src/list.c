@@ -9,6 +9,7 @@ Listnode* listnode_create(char* name, int type)
     if (p != NULL) {
         p->name = name_cpy;
         p->type = type;
+        p->state = '#';
         p->size_type = 'b';
         p->next = NULL;
         p->prev = NULL;
@@ -37,6 +38,7 @@ Listdir* listdir_create(char* path)
     if (p != NULL) {
         p->path_dir = path;
         p->size_type = 'b';
+        p->count_items = 0;
         p->next = NULL;
         p->node = NULL;
         p->prev = NULL;
@@ -47,8 +49,11 @@ Listdir* listdir_create(char* path)
 
 void listdir_add(Listdir* ldir, Listdir* newdir)
 {
-    while (ldir->next != NULL)
+    while (ldir->next != NULL) {
+        if (strcmp(ldir->path_dir, newdir->path_dir) == 0)
+            return;
         ldir = ldir->next;
+    }
     ldir->next = newdir;
     newdir->prev = ldir;
 };
@@ -74,8 +79,5 @@ void listdir_free(Listdir* ldir)
         }
         p = ldir;
     }
-    free(p->path_dir);
     free(p);
-    free(n->name);
-    free(n);
 };

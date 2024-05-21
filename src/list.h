@@ -8,6 +8,7 @@ typedef struct Listdir Listdir;
 
 typedef struct Listnode {
     char* name;
+    char state;
     int type;
     char size_type;
     size_t byte;
@@ -16,6 +17,7 @@ typedef struct Listnode {
 } Listnode;
 
 typedef struct Listdir {
+    int count_items;
     char* path_dir;
     char size_type;
     size_t byte_dir;

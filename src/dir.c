@@ -25,6 +25,7 @@ int fill_listnode(DIR* dir, Listdir* ldir, int flag_hidden_dir)
 {
     struct dirent* entry;
     struct stat file_stat;
+    int count_items = 0;
 
     // проходим по каталогу и заполняем его содержимое в структуру
     while ((entry = readdir(dir)) != NULL) {
@@ -44,7 +45,9 @@ int fill_listnode(DIR* dir, Listdir* ldir, int flag_hidden_dir)
             ldir->node->byte = file_stat.st_size; // сохраняем размер файла
         }
         free(full_path);
+        count_items++;
     }
+    ldir->count_items = count_items;
     return 0;
 };
 
