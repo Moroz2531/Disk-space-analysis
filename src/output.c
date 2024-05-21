@@ -51,7 +51,7 @@ void display_listnode(Listdir* ldir)
 
         display_size(node, i, x);
         if (node->type == DT_DIR)
-            printw("#");
+            printw("%c", node->state);
     }
 };
 
@@ -79,9 +79,15 @@ void movement(Listdir* ldir, wchar_t c)
     } else if (c == KEY_DOWN && ldir->node->next != NULL) {
         y++;
         ldir->node = ldir->node->next;
-    } else if (c == KEY_RIGHT) {
+    } else if (c == KEY_RIGHT && ldir->node->type == DT_DIR) {
+        if (ldir->node->state == '#') {
+            ldir->node->state = '@';
+        }
+    } else if (c == KEY_LEFT && ldir->node->type == DT_DIR) {
+        if (ldir->node->state == '@')
+            ldir->node->state = '#';
     }
-    mvprintw(10, 50, "%s", ldir->node->name);
+    display_listnode(ldir);
     move(y, x);
 };
 
@@ -99,13 +105,10 @@ int display_listdir(Listdir* ldir)
 
     do {
         clear();
-
         display_root_path(ldir);
-        display_listnode(ldir);
         display_delim(ldir);
         movement(ldir, c);
         refresh();
-
     } while ((c = getch()) != 'q');
 
     endwin();
