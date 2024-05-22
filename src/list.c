@@ -38,7 +38,6 @@ Listdir* listdir_create(char* path)
     if (p != NULL) {
         p->path_dir = path;
         p->size_type = 'b';
-        p->count_items = 0;
         p->next = NULL;
         p->node = NULL;
         p->prev = NULL;
@@ -64,6 +63,9 @@ void listdir_free(Listdir* ldir)
     Listdir* p = NULL;
     Listnode* n = NULL;
 
+    while (ldir->prev != NULL)
+        ldir = ldir->prev;
+
     for (; ldir != NULL; ldir = ldir->next) {
         if (p != NULL) {
             free(p->path_dir);
@@ -80,4 +82,73 @@ void listdir_free(Listdir* ldir)
         p = ldir;
     }
     free(p);
+};
+
+Map* map_create(Listnode* node, char* path_dir)
+{
+    Map* map = malloc(sizeof(Map));
+
+    if (map != NULL) {
+        map->path_dir = path_dir;
+        map->node = node;
+        map->next = NULL;
+        map->prev = NULL;
+    }
+    return map;
+};
+
+void map_add(Map* map, Map* new_map)
+{
+    while (map->next != NULL)
+        map = map->next;
+    map->next = new_map;
+    new_map->prev = map;
+};
+
+// добавление элементов открытого каталога в карту
+// map указывает на открытый каталог
+int map_add_node(Map* map, Listnode* node, char* path_dir)
+{
+    Map* new_map = map_create(node, path_dir);
+
+    if (new_map != NULL) {
+        Map* map_cpy = map;
+        while (strcmp(map->next->path_dir, map_cpy->path_dir) != 0
+               && map->next != NULL)
+            map = map->next;
+        Map* end_map = map->next;
+
+        if (end_map == NULL) {
+            map->next = new_map;
+            new_map->prev = map;
+        } else {
+            Map* end_map_prev = end_map->prev;
+            end_map->prev = new_map;
+            new_map->next = end_map;
+            new_map->prev = end_map_prev;
+            end_map_prev->next = new_map;
+        }
+        map = map_cpy;
+        return 0;
+    }
+    return 1;
+};
+
+void map_delete_node(Map* map, char* path_dir)
+{
+    if (strcmp(map->path_dir, map->next->path_dir) == 0)
+        return;
+    Map* map_cpy = map->next;
+    while (strcmp(map_cpy->path_dir, path_dir) == 0 && map_cpy != NULL) {
+        Map* map_delete = map_cpy;
+        map_cpy = map_cpy->next;
+        free(map_delete);
+    }
+
+    if (map_cpy == NULL)
+        map->next = map_cpy;
+    else {
+        map->next = map_cpy;
+        map_cpy->prev = map;
+    }
 };
