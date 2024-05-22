@@ -20,7 +20,7 @@ int display_percentage(Listnode* n, int y, int x, Listdir* ldir)
     const int shift = x + 3;
     const float percentage = ((float)n->byte / ldir->byte_dir) * 100;
 
-    mvprintw(y, shift, "%5.2f%c\t", percentage, '%');
+    mvprintw(y, shift, "%5.2f%c", percentage, '%');
     // обходим отображение процентного соотношения
     return shift + 6;
 };
@@ -30,7 +30,7 @@ void display_size(Listnode* n, const int y, const int x)
     const int shift = x + 4;
     size_t byte = converter(n);
 
-    mvprintw(y, shift, "%ld %c\t", byte, n->size_type);
+    mvprintw(y, shift, "%ld %c", byte, n->size_type);
 };
 
 // выводит ступени для открытых каталогов
@@ -60,9 +60,9 @@ int display_next_listnode(Listdir* ldir, char* path, int y, int x)
 
         const int current_x = display_percentage(node, y, SIZE_BUF + x, ldir);
 
-        display_size(node, y, current_x + x);
+        display_size(node, y, current_x);
         if (node->type == DT_DIR)
-            printw("%c", node->state);
+            mvprintw(y, current_x + 14, "%c", node->state);
 
         if (node->type == DT_DIR && node->state == '@') {
             char* path = change_path(ldir->path_dir, node->name);
@@ -91,7 +91,7 @@ void display_listnode(Listdir* ldir)
 
         display_size(node, y, x);
         if (node->type == DT_DIR)
-            printw("%c", node->state);
+            mvprintw(y, x + 14, "%c", node->state);
 
         if (node->type == DT_DIR && node->state == '@') {
             char* path = change_path(ldir->path_dir, node->name);
@@ -101,7 +101,7 @@ void display_listnode(Listdir* ldir)
     }
 };
 
-// графика приложения: отображение разделителей, цветов и общей информации
+// отображение разделителей
 void display_delim(Listdir* ldir)
 {
     int cols, rows;
