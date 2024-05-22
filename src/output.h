@@ -9,9 +9,11 @@
 
 void display_root_path(Listdir* ldir);
 int display_percentage(Listnode* n, int y, int x, Listdir* ldir);
-void movement(Listdir* ldir, wchar_t c);
+void movement(Listdir* ldir, wchar_t c, Map** map);
 void display_size(Listnode* n, const int y, const int x);
 void display_listnode(Listdir* ldir);
+void move_right(Listdir* t_ldir, Map** map);
+void move_left(Listdir* t_ldir, Map** map);
 void display_delim(Listdir* ldir);
 int display_listdir(Listdir* ldir);
 
