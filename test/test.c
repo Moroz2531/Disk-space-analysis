@@ -1,7 +1,8 @@
 #include <ctest.h>
 
-#include "../src/parser.h"
 #include "../src/converter.h"
+#include "../src/list.h"
+#include "../src/parser.h"
 
 CTEST(argv_parse, check_no_argv)
 {
@@ -117,4 +118,64 @@ CTEST(converter, check_converter)
 
     ASSERT_EQUAL(expect_size, actual_byte);
     ASSERT_EQUAL(expect_type, node->size_type);
+}
+
+CTEST(listnode_create, check_listnode_create)
+{
+    Listnode* node = listnode_create("testnode", 8);
+
+    const char* expect_name = "testnode";
+    const char expect_type = 8;
+    const char expect_size_type = 'b';
+
+    ASSERT_EQUAL(*expect_name, *node->name);
+    ASSERT_EQUAL(expect_type, node->type);
+    ASSERT_EQUAL(expect_size_type, node->size_type);
+    ASSERT_NULL(node->next);
+    ASSERT_NULL(node->prev);
+}
+
+CTEST(listnode_add, check_listnode_add)
+{
+    Listnode* node = listnode_create("testnode", 8);
+    Listnode* newnode = listnode_add(node, "testadd", 8);
+
+    const char* expect_name = "testadd";
+    const char expect_type = 8;
+    const char expect_size_type = 'b';
+    
+    ASSERT_EQUAL(*expect_name, *newnode->next->name);
+    ASSERT_EQUAL(expect_type, newnode->next->type);
+    ASSERT_EQUAL(expect_size_type, newnode->next->size_type);
+    ASSERT_NOT_NULL(newnode->next);
+    ASSERT_NOT_NULL(newnode->next->prev);
+}
+
+CTEST(listdir_create, check_lisdir_create)
+{
+    char* path = "testpath";
+    Listdir* ldir = listdir_create(path);
+
+    const char* expect_dir_path = path;
+    const char expect_size_type = 'b';
+    
+    ASSERT_EQUAL(expect_dir_path, ldir->path_dir);
+    ASSERT_EQUAL(expect_size_type, ldir->size_type);
+    ASSERT_NULL(ldir->node);
+    ASSERT_NULL(ldir->next);
+    ASSERT_NULL(ldir->prev);
+}
+
+CTEST(listdir_add, check_listdir_add)
+{
+    char* path1 = "testpath1";
+    char* path2 = "testpath2";
+
+    Listdir* ldir = listdir_create(path1);
+    Listdir* newdir = listdir_create(path2);
+
+    listdir_add(ldir, newdir);
+
+    ASSERT_NOT_NULL(ldir->next);
+    ASSERT_NOT_NULL(ldir->next->prev);
 }
