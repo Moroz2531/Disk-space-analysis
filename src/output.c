@@ -111,32 +111,46 @@ void display_delim(Listdir* ldir)
         mvaddch(1, i, '-');
 };
 
-void move_right(Listdir* t_ldir, Map** map)
+int move_right(Listdir* t_ldir, Map** map)
 {
-    (*map)->node->state = '@';
-
     char* path = change_path((*map)->path_dir, (*map)->node->name);
+    if (path == NULL)
+        return 1;
 
     while (strcmp(t_ldir->path_dir, path) != 0)
         t_ldir = t_ldir->next;
     free(path);
 
-    Listnode* tnode = t_ldir->node;
+    map_add_node(*map, t_ldir);
+    (*map)->node->state = '@';
 
-    while (tnode != NULL) {
-        map_add_node(*map, tnode, t_ldir->path_dir);
-        tnode = tnode->next;
-    }
+    return 0;
 };
 
-void move_left(Listdir* t_ldir, Map** map)
+int move_left(Listdir* t_ldir, Map** map)
 {
-    map_delete_node(*map, (*map)->next->path_dir);
+    char* path = change_path((*map)->path_dir, (*map)->node->name);
+    if (path == NULL)
+        return 1;
+
+    while (strcmp(t_ldir->path_dir, path) != 0)
+        t_ldir = t_ldir->next;
+    free(path);
+
+    Listnode* node = t_ldir->node;
+    while (node != NULL) {
+        if (node->state == '@')
+            return 0;
+        node = node->next;
+    }
+    map_delete_node(*map);
     (*map)->node->state = '#';
+
+    return 0;
 };
 
 // управление клавишами up, down, left, right
-void movement(Listdir* ldir, wchar_t c, Map** map)
+int movement(Listdir* ldir, wchar_t c, Map** map)
 {
     static int x = 0, y = 2;
     Listdir* t_ldir = ldir;
@@ -154,15 +168,19 @@ void movement(Listdir* ldir, wchar_t c, Map** map)
 
     } else if (c == KEY_RIGHT && (*map)->node->type == DT_DIR) {
         if ((*map)->node->state == '#')
-            move_right(t_ldir, map);
+            if (move_right(t_ldir, map))
+                return 1;
 
     } else if (c == KEY_LEFT && (*map)->node->type == DT_DIR) {
         if ((*map)->node->state == '@')
-            move_left(t_ldir, map);
+            if (move_left(t_ldir, map))
+                return 1;
     }
     mvprintw(15, 40, "%25s", (*map)->node->name);
     display_listnode(ldir);
     move(y, x);
+
+    return 0;
 };
 
 // отображение структуры listdir
@@ -192,10 +210,13 @@ int display_listdir(Listdir* ldir)
         clear();
         display_root_path(ldir);
         display_delim(ldir);
-        movement(ldir, c, &map);
+        if (movement(ldir, c, &map))
+            return 1;
         refresh();
     } while ((c = getch()) != 'q');
 
+    map_free(map);
     endwin();
+
     return 0;
 };

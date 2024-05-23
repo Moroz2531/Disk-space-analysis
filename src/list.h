@@ -40,7 +40,8 @@ void listdir_add(Listdir* ldir, Listdir* newdir);
 void listdir_free(Listdir* ldir);
 Map* map_create(Listnode* node, char* path_dir);
 void map_add(Map* map1, Map* map2);
-int map_add_node(Map* map, Listnode* node, char* path_dir);
-void map_delete_node(Map* map, char* path_dir);
+int map_add_node(Map* map, Listdir* ldir);
+void map_delete_node(Map* map);
+void map_free(Map* map);
 
 #endif

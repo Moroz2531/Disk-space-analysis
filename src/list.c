@@ -1,5 +1,7 @@
 #include "list.h"
 
+#include "dir.h"
+
 Listnode* listnode_create(char* name, int type)
 {
     Listnode* p = malloc(sizeof(Listnode));
@@ -87,6 +89,8 @@ void listdir_free(Listdir* ldir)
 Map* map_create(Listnode* node, char* path_dir)
 {
     Map* map = malloc(sizeof(Map));
+    if (map == NULL)
+        return NULL;
 
     if (map != NULL) {
         map->path_dir = path_dir;
@@ -107,48 +111,57 @@ void map_add(Map* map, Map* new_map)
 
 // добавление элементов открытого каталога в карту
 // map указывает на открытый каталог
-int map_add_node(Map* map, Listnode* node, char* path_dir)
+int map_add_node(Map* map, Listdir* ldir)
 {
-    Map* new_map = map_create(node, path_dir);
+    Map* map_cpy = map;
+    Map* map_end = map->next;
+    Map* new_map = NULL;
 
-    if (new_map != NULL) {
-        Map* map_cpy = map;
-        while (strcmp(map->next->path_dir, map_cpy->path_dir) != 0
-               && map->next != NULL)
-            map = map->next;
-        Map* end_map = map->next;
+    Listnode* node = ldir->node;
 
-        if (end_map == NULL) {
-            map->next = new_map;
-            new_map->prev = map;
-        } else {
-            Map* end_map_prev = end_map->prev;
-            end_map->prev = new_map;
-            new_map->next = end_map;
-            new_map->prev = end_map_prev;
-            end_map_prev->next = new_map;
-        }
-        map = map_cpy;
-        return 0;
+    while (node != NULL) {
+        new_map = map_create(node, ldir->path_dir);
+        if (new_map == NULL)
+            return 1;
+        map_cpy->next = new_map;
+        new_map->next = map_end;
+        new_map->prev = map_cpy;
+        map_cpy = map_cpy->next;
+        node = node->next;
     }
-    return 1;
+    if (map_end != NULL)
+        map_end->prev = new_map;
+
+    return 0;
 };
 
-void map_delete_node(Map* map, char* path_dir)
+void map_delete_node(Map* map)
 {
-    if (strcmp(map->path_dir, map->next->path_dir) == 0)
-        return;
     Map* map_cpy = map->next;
-    while (strcmp(map_cpy->path_dir, path_dir) == 0 && map_cpy != NULL) {
+    char* path = change_path(map->path_dir, map->node->name);
+
+    while (map_cpy != NULL && strcmp(map_cpy->path_dir, path) == 0) {
+        if (map_cpy->node->state == '@')
+            map_delete_node(map_cpy);
         Map* map_delete = map_cpy;
         map_cpy = map_cpy->next;
         free(map_delete);
     }
 
-    if (map_cpy == NULL)
-        map->next = map_cpy;
-    else {
-        map->next = map_cpy;
+    map->next = map_cpy;
+    if (map_cpy != NULL)
         map_cpy->prev = map;
-    }
+    free(path);
 };
+
+void map_free(Map* map)
+{
+    while (map != NULL && map->prev != NULL)
+        map = map->prev;
+
+    while (map != NULL) {
+        Map* map_delete = map;
+        map = map->next;
+        free(map_delete);
+    }
+}
