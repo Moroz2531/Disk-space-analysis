@@ -1,9 +1,9 @@
 #include <ctest.h>
 
 #include "../src/converter.h"
+#include "../src/dir.h"
 #include "../src/list.h"
 #include "../src/parser.h"
-#include "../src/dir.h"
 
 CTEST(argv_parse, check_no_argv)
 {
@@ -144,7 +144,7 @@ CTEST(listnode_add, check_listnode_add)
     const char* expect_name = "testadd";
     const char expect_type = 8;
     const char expect_size_type = 'b';
-    
+
     ASSERT_EQUAL(*expect_name, *newnode->next->name);
     ASSERT_EQUAL(expect_type, newnode->next->type);
     ASSERT_EQUAL(expect_size_type, newnode->next->size_type);
@@ -159,7 +159,7 @@ CTEST(listdir_create, check_lisdir_create)
 
     const char* expect_dir_path = path;
     const char expect_size_type = 'b';
-    
+
     ASSERT_EQUAL(expect_dir_path, ldir->path_dir);
     ASSERT_EQUAL(expect_size_type, ldir->size_type);
     ASSERT_NULL(ldir->node);
@@ -192,7 +192,8 @@ CTEST(change_path, check_change_path)
     ASSERT_STR(expect_mod_path, mod_path);
 }
 
-CTEST(absolute_root_path, check_valid_path) {
+CTEST(absolute_root_path, check_valid_path)
+{
     char* path = NULL;
     const int result = absolute_root_path(&path);
     ASSERT_EQUAL(0, result);
@@ -200,7 +201,7 @@ CTEST(absolute_root_path, check_valid_path) {
     ASSERT_TRUE(path[0] == '/');
 }
 
-CTEST(fill_listnode, check_filling_node) 
+CTEST(fill_listnode, check_filling_node)
 {
     char* path = "/tmp/testdir";
     Listdir* ldir = listdir_create(path);
@@ -242,7 +243,7 @@ CTEST(count_bytes_dir, check_count_bytes_dir)
     ASSERT_EQUAL(300, ldir->byte_dir);
     ASSERT_EQUAL(100, ldir->node->byte);
     ASSERT_EQUAL(200, ldir->node->next->byte);
-    
+
     listdir_free(ldir);
 }
 
@@ -263,7 +264,7 @@ CTEST(swap, check_swap_node)
     ASSERT_EQUAL(expect_node1_byte, node2->byte);
 }
 
-CTEST(sort_items, check_sort_files) 
+CTEST(sort_items, check_sort_files)
 {
     Listnode* node1 = listnode_create("test1.txt", 8);
     Listnode* node2 = listnode_add(node1, "test2.txt", 8);
@@ -280,7 +281,7 @@ CTEST(sort_items, check_sort_files)
     ASSERT_EQUAL(75, node3->next->next->byte);
 }
 
-CTEST(sort_items_listnode, check_sort_dir) 
+CTEST(sort_items_listnode, check_sort_dir)
 {
     char* path = "/tmp/testdir";
     Listdir* ldir = listdir_create(path);
@@ -301,7 +302,7 @@ CTEST(sort_items_listnode, check_sort_dir)
     ASSERT_EQUAL(50, ldir->node->next->next->byte);
 }
 
-CTEST(fill_listdir, check_filling_dir) 
+CTEST(fill_listdir, check_filling_dir)
 {
     char* path = "/tmp/testdir";
     Listdir* ldir = listdir_create(path);
