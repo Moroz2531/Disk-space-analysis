@@ -7,6 +7,7 @@
 #include "dir.h"
 #include "help.h"
 #include "parser.h"
+#include "output.h"
 
 void opt_only_dir(char* path);
 void opt_m();

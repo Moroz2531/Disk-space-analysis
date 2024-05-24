@@ -1,4 +1,4 @@
-/*#include "opt.h"
+#include "opt.h"
 
 void opt_only_dir(char* path)
 {
@@ -12,7 +12,7 @@ void opt_only_dir(char* path)
         fprintf(stderr, "Failed to init home directory\n");
         exit(EXIT_FAILURE);
     }
-    fill_listnode(dir, ldir);
+    fill_listnode(dir, ldir, 1);
     closedir(dir);
 
     // увеличение связных списков и добавление каталогов с их содержимых
@@ -33,7 +33,7 @@ void opt_only_dir(char* path)
                 listdir_add(t_ldir, mod_ldir);
 
                 dir = opendir(mod_ldir->path_dir);
-                fill_listnode(dir, mod_ldir);
+                fill_listnode(dir, mod_ldir, 1);
                 closedir(dir);
             }
         }
@@ -77,10 +77,10 @@ void opt_m()
         fprintf(stderr, "Failed to init home directory\n");
         exit(EXIT_FAILURE);
     }
-    fill_listnode(dir, ldir);
+    fill_listnode(dir, ldir, 1);
     closedir(dir);
 
-    // увеличение связных списков и добавление каталогов с их содержимых
+    /* увеличение связных списков и добавление каталогов с их содержимых
     Listdir* t_ldir = ldir;
     for (Listdir* mod_ldir = NULL; t_ldir != NULL; t_ldir = t_ldir->next) {
         Listnode* n = t_ldir->node;
@@ -98,7 +98,7 @@ void opt_m()
                 listdir_add(t_ldir, mod_ldir);
 
                 dir = opendir(mod_ldir->path_dir);
-                fill_listnode(dir, mod_ldir);
+                fill_listnode(dir, mod_ldir, 1);
                 closedir(dir);
             }
         }
@@ -107,23 +107,17 @@ void opt_m()
     if (count_bytes_dir(ldir)) {
         fprintf(stderr, "Size analitic failed!\n");
         exit(EXIT_FAILURE);
+    }*/
+    
+    // графика
+    if (fill_listdir(ldir, 1)) {
+        listdir_free(ldir);
+        return EXIT_FAILURE;
     }
-    // конвертация размера и вывод происходит сразу в функции opt_m
-    converter(ldir);
-
-    for (; ldir != NULL; ldir = ldir->next) {
-        printf("path_dir: %s\n", ldir->path_dir);
-        for (; ldir->node != NULL; ldir->node = ldir->node->next) {
-            printf("name: %s | size: %zu | %c | type: %d\n",
-                   ldir->node->name,
-                   ldir->node->byte,
-                   ldir->size_type,
-                   ldir->node->type);
-        }
-    }
+    display_listdir(ldir);
     listdir_free(ldir);
 };
-
+/*
 void opt_a(char* path)
 {
     Listdir* ldir = listdir_create(NULL);
@@ -200,7 +194,7 @@ void opt_a_no_dir()
         }
     }
     listdir_free(ldir);
-};
+};*/
 
 void selection_option(argv_t new_argv)
 {
@@ -217,11 +211,11 @@ void selection_option(argv_t new_argv)
         } else if (strcmp(new_argv.opt, "-a") == 0) {
             // '-a' передана с dir_path
             if (new_argv.dir != NULL) {
-                opt_a(new_argv.dir);
+                //opt_a(new_argv.dir);
                 exit(EXIT_SUCCESS);
                 // '-a' передана без dir_path
             } else {
-                opt_a_no_dir();
+                //opt_a_no_dir();
                 exit(EXIT_SUCCESS);
             }
         }
@@ -229,9 +223,7 @@ void selection_option(argv_t new_argv)
     } else if (new_argv.dir != NULL) {
         opt_only_dir(new_argv.dir);
         exit(EXIT_SUCCESS);
-        // иначе выходим из функции
-    } else {
-        return;
     }
+
+    return;
 };
-*/
