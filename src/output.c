@@ -20,7 +20,7 @@ int display_percentage(Listnode* n, int y, int x, Listdir* ldir)
     const int shift = x + 3;
     const float percentage = ((float)n->byte / ldir->byte_dir) * 100;
 
-    mvprintw(y, shift, "%5.2f%c\t", percentage, '%');
+    mvprintw(y, shift, "%5.2f%c", percentage, '%');
     // обходим отображение процентного соотношения
     return shift + 6;
 };
@@ -30,60 +30,191 @@ void display_size(Listnode* n, const int y, const int x)
     const int shift = x + 4;
     size_t byte = converter(n);
 
-    mvprintw(y, shift, "%ld %c\t", byte, n->size_type);
-}
+    mvprintw(y, shift, "%ld %c", byte, n->size_type);
+};
 
-// отображение содержимого каталога
-void display_listnode(Listdir* ldir)
+// выводит ступени для открытых каталогов
+void display_transition(int x, int y)
 {
-    Listnode* node = ldir->node;
-    for (int i = 2; node != NULL; node = node->next, i++) {
+    for (int i = 0; i < x; i++)
+        mvaddstr(y, i, "-");
+};
+
+// отображение открытых каталогов
+int display_next_listnode(Listdir* ldir, char* path, int y, int x)
+{
+    while (strcmp(ldir->path_dir, path) != 0) {
+        ldir = ldir->next;
+        if (ldir == NULL) {
+            listdir_free(ldir);
+            exit(1);
+        }
+    }
+    for (Listnode* node = ldir->node; node != NULL; node = node->next, y++) {
+        display_transition(x, y);
+
         wchar_t buf[SIZE_BUF];
 
         swprintf(buf, SIZE_BUF, L"%16s", node->name);
-        mvaddwstr(i, 0, buf);
+        mvaddwstr(y, x, buf);
 
-        const int x = display_percentage(node, i, SIZE_BUF, ldir);
+        const int current_x = display_percentage(node, y, SIZE_BUF + x, ldir);
 
-        display_size(node, i, x);
+        display_size(node, y, current_x);
         if (node->type == DT_DIR)
-            printw("#");
+            mvprintw(y, current_x + 14, "%c", node->state);
+
+        if (node->type == DT_DIR && node->state == '@') {
+            char* path = change_path(ldir->path_dir, node->name);
+            y = display_next_listnode(ldir, path, y + 1, x + 4);
+            free(path);
+        }
+    }
+    return y - 1;
+};
+
+// отображение начального каталога
+void display_listnode(Listdir* ldir)
+{
+    Listnode* node = ldir->node;
+
+    while (node->prev != NULL)
+        node = node->prev;
+
+    for (int y = 2; node != NULL; node = node->next, y++) {
+        wchar_t buf[SIZE_BUF];
+
+        swprintf(buf, SIZE_BUF, L"%16s", node->name);
+        mvaddwstr(y, 0, buf);
+
+        const int x = display_percentage(node, y, SIZE_BUF, ldir);
+
+        display_size(node, y, x);
+        if (node->type == DT_DIR)
+            mvprintw(y, x + 14, "%c", node->state);
+
+        if (node->type == DT_DIR && node->state == '@') {
+            char* path = change_path(ldir->path_dir, node->name);
+            y = display_next_listnode(ldir, path, y + 1, 4);
+            free(path);
+        }
     }
 };
 
-// графика приложения: отображение разделителей, цветов и общей информации
+// отображение разделителей
 void display_delim(Listdir* ldir)
 {
-    int cols, rows;
-    getmaxyx(stdscr, rows, cols);
+    const int cols = getmaxx(stdscr);
 
     for (int i = 0; i < cols; i++)
         mvaddch(1, i, '-');
 };
 
+int move_right(Listdir* t_ldir, Map** map)
+{
+    char* path = change_path((*map)->path_dir, (*map)->node->name);
+    if (path == NULL)
+        return 1;
+
+    while (strcmp(t_ldir->path_dir, path) != 0)
+        t_ldir = t_ldir->next;
+    free(path);
+
+    map_add_node(*map, t_ldir);
+    (*map)->node->state = '@';
+
+    return 0;
+};
+
+int move_left(Listdir* t_ldir, Map** map)
+{
+    char* path = change_path((*map)->path_dir, (*map)->node->name);
+    if (path == NULL)
+        return 1;
+
+    while (strcmp(t_ldir->path_dir, path) != 0)
+        t_ldir = t_ldir->next;
+    free(path);
+
+    Listnode* node = t_ldir->node;
+    while (node != NULL) {
+        if (node->state == '@')
+            return 0;
+        node = node->next;
+    }
+    map_delete_node(*map);
+    (*map)->node->state = '#';
+
+    return 0;
+};
+
+// управление клавишами up, down, left, right
+int movement(Listdir* ldir, wchar_t c, Map** map)
+{
+    static int x = 0, y = 2;
+    Listdir* t_ldir = ldir;
+
+    move(y, x);
+    refresh();
+
+    if (c == KEY_UP && (*map)->prev != NULL) {
+        y--;
+        *map = (*map)->prev;
+
+    } else if (c == KEY_DOWN && (*map)->next != NULL) {
+        y++;
+        *map = (*map)->next;
+
+    } else if (c == KEY_RIGHT && (*map)->node->type == DT_DIR) {
+        if ((*map)->node->state == '#')
+            if (move_right(t_ldir, map))
+                return 1;
+
+    } else if (c == KEY_LEFT && (*map)->node->type == DT_DIR) {
+        if ((*map)->node->state == '@')
+            if (move_left(t_ldir, map))
+                return 1;
+    }
+    display_listnode(ldir);
+    move(y, x);
+
+    return 0;
+};
+
 // отображение структуры listdir
 int display_listdir(Listdir* ldir)
 {
-    wchar_t c;
+    wchar_t c = 0;
+    Map* map = map_create(ldir->node, ldir->path_dir);
+    Listnode* node = ldir->node;
+
+    node = node->next;
+    // заполняем карту корневыми элементами
+    while (node != NULL) {
+        Map* map1 = map_create(node, ldir->path_dir);
+        map_add(map, map1);
+        node = node->next;
+    }
 
     initscr();
+    scrollok(stdscr, TRUE);
     noecho();
-    curs_set(0);
+    keypad(stdscr, TRUE);
+    curs_set(1);
 
     setlocale(LC_ALL, "ru_RU.UTF-8");
 
     do {
         clear();
-
         display_root_path(ldir);
-        display_listnode(ldir);
         display_delim(ldir);
-
-        // перемещение курсора в начало
-        move(2, 0);
+        if (movement(ldir, c, &map))
+            return 1;
         refresh();
     } while ((c = getch()) != 'q');
 
+    map_free(map);
     endwin();
+
     return 0;
 };
