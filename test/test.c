@@ -3,6 +3,7 @@
 #include "../src/converter.h"
 #include "../src/list.h"
 #include "../src/parser.h"
+#include "../src/dir.h"
 
 CTEST(argv_parse, check_no_argv)
 {
@@ -178,4 +179,134 @@ CTEST(listdir_add, check_listdir_add)
 
     ASSERT_NOT_NULL(ldir->next);
     ASSERT_NOT_NULL(ldir->next->prev);
+}
+
+CTEST(change_path, check_change_path)
+{
+    char* path = "/home/user";
+    char* name = "testdir";
+    const char* expect_mod_path = "/home/user/testdir";
+
+    char* mod_path = change_path(path, name);
+    ASSERT_NOT_NULL(mod_path);
+    ASSERT_STR(expect_mod_path, mod_path);
+}
+
+CTEST(absolute_root_path, check_valid_path) {
+    char* path = NULL;
+    const int result = absolute_root_path(&path);
+    ASSERT_EQUAL(0, result);
+    ASSERT_NOT_NULL(path);
+    ASSERT_TRUE(path[0] == '/');
+}
+
+CTEST(fill_listnode, check_filling_node) 
+{
+    char* path = "/tmp/testdir";
+    Listdir* ldir = listdir_create(path);
+
+    mkdir(path, 0755);
+    FILE* fp1 = fopen("/tmp/testdir/file1.txt", "w");
+    fclose(fp1);
+    FILE* fp2 = fopen("/tmp/testdir/file2.txt", "w");
+    fclose(fp2);
+    mkdir("/tmp/testdir/subdir", 0755);
+
+    DIR* dir = opendir(path);
+    ASSERT_NOT_NULL(dir);
+
+    int result = fill_listnode(dir, &ldir, 0);
+    ASSERT_EQUAL(0, result);
+
+    closedir(dir);
+    rmdir("/tmp/testdir/subdir");
+    unlink("/tmp/testdir/file1.txt");
+    unlink("/tmp/testdir/file2.txt");
+    rmdir("/tmp/testdir");
+}
+
+CTEST(count_bytes_dir, check_count_bytes_dir)
+{
+    char* path = "/testdir";
+    char* name1 = "test1.txt";
+    char* name2 = "test2.txt";
+    Listdir* ldir = listdir_create(path);
+    ldir->node = listnode_add(ldir->node, name1, 8);
+    ldir->node = listnode_add(ldir->node, name2, 8);
+    ldir->node->byte = 100;
+    ldir->node->next->byte = 200;
+
+    int result = count_bytes_dir(ldir);
+    ASSERT_EQUAL(0, result);
+
+    ASSERT_EQUAL(300, ldir->byte_dir);
+    ASSERT_EQUAL(100, ldir->node->byte);
+    ASSERT_EQUAL(200, ldir->node->next->byte);
+    
+    listdir_free(ldir);
+}
+
+CTEST(swap, check_swap_node)
+{
+    Listnode* node1 = listnode_create("test1.txt", 8);
+    node1->byte = 100;
+
+    Listnode* node2 = listnode_create("test2.txt", 8);
+    node2->byte = 200;
+
+    const size_t expect_node1_byte = 100;
+    const size_t expect_node2_byte = 200;
+
+    swap(node1, node2);
+
+    ASSERT_EQUAL(expect_node2_byte, node1->byte);
+    ASSERT_EQUAL(expect_node1_byte, node2->byte);
+}
+
+CTEST(sort_items, check_sort_files) 
+{
+    Listnode* node1 = listnode_create("test1.txt", 8);
+    Listnode* node2 = listnode_add(node1, "test2.txt", 8);
+    Listnode* node3 = listnode_add(node2, "test3.txt", 8);
+
+    node3->byte = 50;
+    node3->next->byte = 100;
+    node3->next->next->byte = 75;
+
+    sort_items(node3, 8);
+
+    ASSERT_EQUAL(100, node3->byte);
+    ASSERT_EQUAL(50, node3->next->byte);
+    ASSERT_EQUAL(75, node3->next->next->byte);
+}
+
+CTEST(sort_items_listnode, check_sort_dir) 
+{
+    char* path = "/tmp/testdir";
+    Listdir* ldir = listdir_create(path);
+
+    ldir->node = listnode_add(ldir->node, "test1.txt", 8);
+    ldir->node->byte = 100;
+
+    ldir->node = listnode_add(ldir->node, "test2.txt", 8);
+    ldir->node->byte = 150;
+
+    ldir->node = listnode_add(ldir->node, "test3.txt", 8);
+    ldir->node->byte = 50;
+
+    sort_items_listnode(ldir);
+
+    ASSERT_EQUAL(150, ldir->node->byte);
+    ASSERT_EQUAL(100, ldir->node->next->byte);
+    ASSERT_EQUAL(50, ldir->node->next->next->byte);
+}
+
+CTEST(fill_listdir, check_filling_dir) 
+{
+    char* path = "/tmp/testdir";
+    Listdir* ldir = listdir_create(path);
+    ASSERT_NOT_NULL(ldir);
+
+    const int result = fill_listdir(ldir, 0);
+    ASSERT_EQUAL(0, result);
 }
