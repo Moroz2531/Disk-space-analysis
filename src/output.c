@@ -104,8 +104,7 @@ void display_listnode(Listdir* ldir)
 // отображение разделителей
 void display_delim(Listdir* ldir)
 {
-    int cols, rows;
-    getmaxyx(stdscr, rows, cols);
+    const int cols = getmaxx(stdscr);
 
     for (int i = 0; i < cols; i++)
         mvaddch(1, i, '-');
@@ -176,7 +175,6 @@ int movement(Listdir* ldir, wchar_t c, Map** map)
             if (move_left(t_ldir, map))
                 return 1;
     }
-    mvprintw(15, 40, "%25s", (*map)->node->name);
     display_listnode(ldir);
     move(y, x);
 
