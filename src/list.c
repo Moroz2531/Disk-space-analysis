@@ -129,7 +129,7 @@ int map_add_node(Map* map, Listdir* ldir)
         map_cpy = map_cpy->next;
         node = node->next;
     }
-    if (map_end != NULL)
+    if (map_end != NULL && new_map != NULL)
         map_end->prev = new_map;
 
     return 0;
