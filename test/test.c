@@ -67,7 +67,7 @@ CTEST(byte_converter, check_convert_to_MB)
 CTEST(byte_converter, check_convert_to_GB)
 {
     size_t gb1 = GB;
-    size_t gb2 = GB * 5;
+    size_t gb2 = (long)GB * (long)5;
     const size_t expect_gb2 = gb2 / GB;
     ASSERT_EQUAL(1, byte_converter(gb1));
     ASSERT_EQUAL(expect_gb2, byte_converter(gb2));
@@ -102,7 +102,7 @@ CTEST(type_converter, check_convert_to_GB_type)
 {
     const char expect_type = 'G';
     size_t gb1 = GB;
-    size_t gb2 = GB * 5;
+    size_t gb2 = (long)GB * (long)5;
     ASSERT_EQUAL(expect_type, type_converter(gb1));
     ASSERT_EQUAL(expect_type, type_converter(gb2));
 }
@@ -157,10 +157,9 @@ CTEST(listdir_create, check_lisdir_create)
     char* path = "testpath";
     Listdir* ldir = listdir_create(path);
 
-    const char* expect_dir_path = path;
     const char expect_size_type = 'b';
 
-    ASSERT_EQUAL(expect_dir_path, ldir->path_dir);
+    ASSERT_STR(path, ldir->path_dir);
     ASSERT_EQUAL(expect_size_type, ldir->size_type);
     ASSERT_NULL(ldir->node);
     ASSERT_NULL(ldir->next);
@@ -216,7 +215,7 @@ CTEST(fill_listnode, check_filling_node)
     DIR* dir = opendir(path);
     ASSERT_NOT_NULL(dir);
 
-    int result = fill_listnode(dir, &ldir, 0);
+    int result = fill_listnode(dir, ldir, 0);
     ASSERT_EQUAL(0, result);
 
     closedir(dir);
@@ -305,9 +304,10 @@ CTEST(sort_items_listnode, check_sort_dir)
 CTEST(fill_listdir, check_filling_dir)
 {
     char* path = "/tmp/testdir";
+    argv_t argv = {0, 0};
     Listdir* ldir = listdir_create(path);
     ASSERT_NOT_NULL(ldir);
 
-    const int result = fill_listdir(ldir, 0);
+    const int result = fill_listdir(ldir, 0, argv);
     ASSERT_EQUAL(0, result);
 }
