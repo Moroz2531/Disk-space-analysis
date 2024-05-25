@@ -21,4 +21,7 @@ build:
 test:
   stage: test
   script:
+    - apt-get update
+    - apt-get install -y libncurses5-dev libncursesw5-dev
+    - make
     - make test
