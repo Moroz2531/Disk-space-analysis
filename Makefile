@@ -2,7 +2,7 @@ TARGET = dse
 TARGET_TEST = test
 
 CC = gcc
-CFLAGS = -Wall #-MMD
+CFLAGS = -Wall -MMD -MP -I src
 NCURSES_FLAGS = -lncursesw
 CTEST_FLAGS = -I thirdparty
 
@@ -21,7 +21,11 @@ OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 TEST_SRC = $(wildcard $(TEST_DIR)/*.c)
 TEST_OBJ = $(patsubst $(TEST_DIR)/%.c, $(TEST_OBJ_DIR)/%.o, $(TEST_SRC))
 
+DEPS = $(OBJ:.o=.d)
+
 all: $(BIN_DIR)/$(TARGET)
+
+-include $(DEPS)
 
 $(BIN_DIR)/$(TARGET): $(OBJ) $(LIB_PATH)
 	$(CC) $(CFLAGS) $(OBJ) -o $@ $(NCURSES_FLAGS) 
@@ -47,8 +51,10 @@ $(TEST_OBJ_DIR)/%.o: $(TEST_DIR)/%.c
 $(BIN_DIR)/$(TARGET_TEST): $(TEST_OBJ) $(LIB_PATH)
 	$(CC) $(CFLAGS) $(CTEST_FLAGS) $^ -o $@ $(NCURSES_FLAGS) -lm
 
-clean:
-	rm -rf $(OBJ_DIR)/*.o $(TEST_OBJ_DIR)/*.o $(BIN_DIR)/$(TARGET) $(BIN_DIR)/$(TARGET_TEST)
+uninstall: 
 	sudo rm $(ROOT_PATH)/$(TARGET)
+
+clean:
+	rm -rf $(OBJ_DIR)/* $(TEST_OBJ_DIR)/* $(BIN_DIR)/$(TARGET) $(BIN_DIR)/$(TARGET_TEST)
 
 .PHONY: all clean test install

@@ -1,9 +1,9 @@
 #include <ctest.h>
 
-#include "../src/converter.h"
-#include "../src/dir.h"
-#include "../src/list.h"
-#include "../src/parser.h"
+#include "converter.h"
+#include "dir.h"
+#include "list.h"
+#include "parser.h"
 
 CTEST(argv_parse, check_no_argv)
 {
@@ -76,7 +76,7 @@ CTEST(byte_converter, check_convert_to_GB)
 CTEST(type_converter, check_convert_to_byte_type)
 {
     const char expect_type = 'b';
-    for (size_t byte; byte < KB; byte++)
+    for (size_t byte = 0; byte < KB; byte++)
         ASSERT_EQUAL(expect_type, type_converter(byte));
 }
 
