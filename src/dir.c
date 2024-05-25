@@ -28,7 +28,8 @@ int fill_listnode(DIR* dir, Listdir* ldir, int flag_hidden_dir)
 
     // проходим по каталогу и заполняем его содержимое в структуру
     while ((entry = readdir(dir)) != NULL) {
-        if (flag_hidden_dir)
+        if (flag_hidden_dir == NO_OPT || flag_hidden_dir == OPT_DIR
+            || flag_hidden_dir == OPT_M)
             if (entry->d_name[0] == '.')
                 continue;
 
@@ -147,14 +148,24 @@ void sort_items_listnode(Listdir* ldir)
 };
 
 // заполнение списка каталогов. ldir должен быть инициализирован
-int fill_listdir(Listdir* ldir, int flag_hidden_dir)
+int fill_listdir(Listdir* ldir, int flag_hidden_dir, argv_t argv)
 {
     DIR* dir;
     char* path = NULL;
 
-    if (absolute_root_path(&path))
-        return 1;
+    if (flag_hidden_dir == NO_OPT || flag_hidden_dir == OPT_A) {
+        if (absolute_root_path(&path))
+            return 1;
+    } else if (flag_hidden_dir == OPT_DIR || flag_hidden_dir == OPT_DIR_A)
+        path = argv.dir;
+    else if (flag_hidden_dir == OPT_M) {
+        path = getenv("HOME");
+        if (path == NULL)
+            return 1;
+    }
+
     ldir->path_dir = path;
+
     // заполняем в структуру содержимое корневого пути
     dir = opendir(path);
     if (!dir)
