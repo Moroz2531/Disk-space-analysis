@@ -68,6 +68,9 @@ void listdir_free(Listdir* ldir)
     while (ldir->prev != NULL)
         ldir = ldir->prev;
 
+    if (ldir != NULL)
+        ldir = ldir->next;
+
     for (; ldir != NULL; ldir = ldir->next) {
         if (p != NULL) {
             free(p->path_dir);

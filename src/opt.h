@@ -3,16 +3,15 @@
 
 #include "global.h"
 
-#include "converter.h"
-#include "dir.h"
 #include "help.h"
 #include "parser.h"
-#include "output.h"
 
-void opt_only_dir(char* path);
-void opt_m();
-void opt_a(char* path);
-void opt_a_no_dir();
-void selection_option(argv_t new_argv);
+#define OPT_A 0
+#define NO_OPT 1
+#define OPT_M 2
+#define OPT_DIR 3
+#define OPT_DIR_A 4
+
+int selection_option(argv_t new_argv);
 
 #endif
